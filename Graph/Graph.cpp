@@ -18,12 +18,18 @@ Graph::Graph(int _v)
 void Graph::addEdge(int _from, int _to)
 {
 	Edge edge;
-	edge.from = _from;
-	edge.to = _to;
+	edge._from = _from;
+	edge._to = _to;
+	nodes[_from - 1].children.push_back(nodes[_to - 1]);
 
 	edges.push_back(edge);
 
 	adjacencyMatrix[_from - 1][_to - 1] = adjacencyMatrix[_to - 1][_from - 1] = 1;
+}
+
+void Graph::removeEdge(int _from, int _to)
+{
+	adjacencyMatrix[_from - 1][_to - 1] = adjacencyMatrix[_to - 1][_from - 1] = 0;
 }
 
 int Graph::getNodeCount()
@@ -34,6 +40,28 @@ int Graph::getNodeCount()
 int Graph::getEdgeCount()
 {
 	return edges.size();
+}
+
+Node Graph::getNode(int id)
+{
+	return nodes[id];
+}
+
+int Graph::getSubTreeSize(Node node)
+{
+	int subTreeSize = 0;
+	for (int i = 0; i < node.children.size(); ++i)
+	{
+		subTreeSize += getSubTreeSize(node.children[i]);
+		std::cout << subTreeSize << std::endl;
+	}
+
+	return subTreeSize;
+}
+
+int Graph::getFirstLevelChildrenCount(Node node)
+{
+	return node.children.size();
 }
 
 void Graph::printAdjacencyMatrix()
@@ -53,6 +81,7 @@ void Graph::printEdges()
 {
 	for (int i = 0; i < getEdgeCount(); ++i)
 	{
-		std::cout << edges[i].from << " -> " << edges[i].to << std::endl;
+		std::cout << edges[i]._from << " -> " << edges[i]._to << std::endl;
 	}
+	std::cout << std::endl;
 }
