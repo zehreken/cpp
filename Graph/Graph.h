@@ -1,3 +1,6 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <vector>
 
 struct Node
@@ -32,3 +35,5 @@ public:
 	void printAdjacencyMatrix();
 	void printEdges();
 };
+
+#endif
