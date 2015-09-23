@@ -38,30 +38,32 @@ Node* reverse(Node *head)
 
 int main()
 {
-	Node *head = new Node();
-	head->data = 0;
-	Node *temp = head;
-	for (int i = 1; i < 10; ++i)
-	{
-		Node *newNode = new Node();
-		temp->next = newNode;
-		newNode->data = i;
-		temp = newNode;
-	}
-	
 	LinkedList ll(0);
 	ll.print();
-	for (int i = 1; i < 30; ++i)
+	for (int i = 1; i < 20; ++i)
 	{
 		Node *newNode = new Node();
 		newNode->data = i;
 		ll.add(newNode);
 	}
 	ll.print();
+	std::cout << "size: " << ll.getSize() << std::endl;
 	ll.pop();
 	ll.print();
+	std::cout << "size: " << ll.getSize() << std::endl;
 	for (int i = 0; i < 10; ++i) ll.pop();
 	ll.print();
+	
+	Node *t = new Node();
+	t->data = 9999;
+	ll.insert(t, ll.getSize() - 1);
+	ll.print();
+	std::cout << "size: " << ll.getSize() << std::endl;
+	ll.remove(5);
+	ll.print();
+	std::cout << "size: " << ll.getSize() << std::endl;
+	std::cout << "head data: " << ll.getHead()->data << std::endl;
+	
 	
 	return 0;
 }

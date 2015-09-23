@@ -12,15 +12,18 @@ class LinkedList
 private:
 	Node *head;
 	Node *tail;
+	int size;
 public:
 	LinkedList(int headData);
 	void add(Node *node);
 	void pop();
 	void insert(Node *node, int index);
-	void remove(Node *node, int index);
+	void remove(int index);
+	Node* reverse();
 	int compare(Node *headA, Node *headB);
 	Node* getHead();
 	Node* getTail();
+	int getSize();
 	void print();
 	void printReverse();
 };

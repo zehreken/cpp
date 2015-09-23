@@ -9,12 +9,14 @@ LinkedList::LinkedList(int headData)
 	tail = head;
 	head->next = nullptr;
 	head->data = headData;
+	size = 1;
 }
 
 void LinkedList::add(Node *node)
 {
 	tail->next = node;
 	tail = node;
+	size += 1;
 }
 
 void LinkedList::pop()
@@ -26,22 +28,78 @@ void LinkedList::pop()
 		toPop = temp;
 		temp = temp->next;
 	}
-	if (toPop != nullptr) toPop->next = nullptr;
+	if (toPop != nullptr)
+	{
+		toPop->next = nullptr;
+		tail = toPop;
+		size -= 1;
+	}
 }
 
 void LinkedList::insert(Node *node, int index)
 {
-	Node *temp = head;
+	if (index < 0 || index >= size)
+	{
+		cout << "EXCEPTION: illegal index value" << endl;
+	}
+	else if (index == 0)
+	{
+		node->next = head;
+		head = node;
+		size += 1;
+	}
+	else
+	{
+		Node *temp = head;
+		Node *next = nullptr;
+		int n = 0;
+		while (temp != nullptr && n < index - 1)
+		{
+			temp = temp->next;
+			n += 1;
+		}
+		next = temp->next;
+		temp->next = node;
+		node->next = next;
+		size += 1;
+	}
 }
 
-void LinkedList::remove(Node *node, int index)
+void LinkedList::remove(int index)
 {
-	
+	if (index < 0 || index >= size)
+	{
+		cout << "EXCEPTION: illegal index value" << endl;
+	}
+	else if (index == 0)
+	{
+		head = head->next;
+		size -= 1;
+	}
+	else
+	{
+		Node *temp = head;
+		int n = 0;
+		while (temp != nullptr && n < index - 1)
+		{
+			temp = temp->next;
+			n += 1;
+		}
+		temp->next = temp->next->next;
+		size -= 1;
+	}
+}
+
+Node* reverse()
+{
+	return new Node();
 }
 
 int LinkedList::compare(Node *headA, Node *headB)
 {
+	int isEqual = 1;
 	
+	return isEqual;
 }
 
 Node* LinkedList::getHead()
@@ -52,6 +110,11 @@ Node* LinkedList::getHead()
 Node* LinkedList::getTail()
 {
 	return tail;
+}
+
+int LinkedList::getSize()
+{
+	return size;
 }
 
 void LinkedList::print()
