@@ -20,7 +20,7 @@ public:
 	void insert(Node *node, int index);
 	void remove(int index);
 	Node* reverse();
-	int compare(Node *headA, Node *headB);
+	static int compare(Node *headA, Node *headB);
 	Node* getHead();
 	Node* getTail();
 	int getSize();

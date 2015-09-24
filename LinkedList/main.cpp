@@ -1,6 +1,7 @@
 #include <iostream>
 #include "LinkedList.h"
 
+/*
 Node *newHead = NULL;
 Node* recursiveReverse(Node *head)
 {
@@ -18,23 +19,7 @@ Node* recursiveReverse(Node *head)
 	
 	return newHead;
 }
-
-Node* reverse(Node *head)
-{
-	Node *prev, *current, *next;
-	prev = NULL;
-	current = head;
-	
-	while (current != NULL)
-	{
-		next = current->next;
-		current->next = prev;
-		prev = current;
-		current = next;
-	}
-	
-	return prev;
-}
+//*/
 
 int main()
 {
@@ -63,6 +48,10 @@ int main()
 	ll.print();
 	std::cout << "size: " << ll.getSize() << std::endl;
 	std::cout << "head data: " << ll.getHead()->data << std::endl;
+	
+	Node *reverse = ll.reverse();
+	ll.print();
+	std::cout << "tail data: " << ll.getTail()->data << std::endl;
 	
 	
 	return 0;

@@ -42,6 +42,7 @@ void LinkedList::insert(Node *node, int index)
 	{
 		cout << "EXCEPTION: illegal index value" << endl;
 	}
+	// else if (index == size)
 	else if (index == 0)
 	{
 		node->next = head;
@@ -71,6 +72,7 @@ void LinkedList::remove(int index)
 	{
 		cout << "EXCEPTION: illegal index value" << endl;
 	}
+	// else if (index == size)
 	else if (index == 0)
 	{
 		head = head->next;
@@ -90,9 +92,23 @@ void LinkedList::remove(int index)
 	}
 }
 
-Node* reverse()
+Node* LinkedList::reverse()
 {
-	return new Node();
+	Node *prev, *current, *next;
+	prev = nullptr;
+	current = head;
+	tail = head;
+	
+	while (current != nullptr)
+	{
+		next = current->next;
+		current->next = prev;
+		prev = current;
+		current = next;
+	}
+	
+	head = prev;
+	return head;
 }
 
 int LinkedList::compare(Node *headA, Node *headB)
