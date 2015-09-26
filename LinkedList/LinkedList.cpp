@@ -6,34 +6,32 @@ using namespace std;
 LinkedList::LinkedList(int headData)
 {
 	head = new Node();
-	tail = head;
 	head->next = nullptr;
 	head->data = headData;
+	tail = head;
 	size = 1;
 }
 
-void LinkedList::add(Node *node)
+void LinkedList::push(Node *node)
 {
 	tail->next = node;
 	tail = node;
 	size += 1;
 }
 
-void LinkedList::pop()
+Node* LinkedList::pop()
 {
-	Node *temp = head;
-	Node *toPop = nullptr;
-	while (temp->next != nullptr)
+	Node *itr = head;
+	Node *temp = nullptr;
+	while (itr->next != nullptr)
 	{
-		toPop = temp;
-		temp = temp->next;
+		temp = itr;
+		itr = itr->next;
 	}
-	if (toPop != nullptr)
-	{
-		toPop->next = nullptr;
-		tail = toPop;
-		size -= 1;
-	}
+	tail = temp;
+	size -= 1;
+	
+	return temp->next;
 }
 
 void LinkedList::insert(Node *node, int index)
@@ -42,7 +40,6 @@ void LinkedList::insert(Node *node, int index)
 	{
 		cout << "EXCEPTION: illegal index value" << endl;
 	}
-	// else if (index == size)
 	else if (index == 0)
 	{
 		node->next = head;
@@ -51,16 +48,16 @@ void LinkedList::insert(Node *node, int index)
 	}
 	else
 	{
-		Node *temp = head;
+		Node *itr = head;
 		Node *next = nullptr;
 		int n = 0;
-		while (temp != nullptr && n < index - 1)
+		while (itr != nullptr && n < index - 1)
 		{
-			temp = temp->next;
+			itr = itr->next;
 			n += 1;
 		}
-		next = temp->next;
-		temp->next = node;
+		next = itr->next;
+		itr->next = node;
 		node->next = next;
 		size += 1;
 	}
@@ -72,22 +69,22 @@ void LinkedList::remove(int index)
 	{
 		cout << "EXCEPTION: illegal index value" << endl;
 	}
-	// else if (index == size)
 	else if (index == 0)
 	{
+		delete head;
 		head = head->next;
 		size -= 1;
 	}
 	else
 	{
-		Node *temp = head;
+		Node *itr = head;
 		int n = 0;
-		while (temp != nullptr && n < index - 1)
+		while (itr != nullptr && n < index - 1)
 		{
-			temp = temp->next;
+			itr = itr->next;
 			n += 1;
 		}
-		temp->next = temp->next->next;
+		itr->next = itr->next->next;
 		size -= 1;
 	}
 }
@@ -114,8 +111,29 @@ Node* LinkedList::reverse()
 int LinkedList::compare(Node *headA, Node *headB)
 {
 	int isEqual = 1;
+	Node *itrA, *itrB;
+	itrA = headA;
+	itrB = headB;
+	while (itrA != nullptr)
+	{
+		if (itrB == nullptr || itrA->data != itrB->data)
+		{
+			isEqual = 0;
+			break;
+		}
+		itrA = itrA->next;
+		itrB = itrB->next;
+	}
+	if (itrB != nullptr) isEqual = 0;
 	
 	return isEqual;
+}
+
+Node* LinkedList::mergeSorted(Node *headA, Node *headB)
+{
+	Node *sortedHead = nullptr;
+	
+	return sortedHead;
 }
 
 Node* LinkedList::getHead()
@@ -135,12 +153,12 @@ int LinkedList::getSize()
 
 void LinkedList::print()
 {
-	Node *temp = head;
-	while (temp != nullptr)
+	Node *itr = head;
+	for (int i = 0; i < size; ++i)
 	{
-		cout << temp->data;
-		temp = temp->next;
-		if (temp != nullptr) cout << ", ";
+		cout << itr->data;
+		itr = itr->next;
+		if (i < size - 1) cout << ", ";
 	}
 	cout << endl;
 }

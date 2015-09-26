@@ -23,36 +23,28 @@ Node* recursiveReverse(Node *head)
 
 int main()
 {
+	using namespace std;
+	
 	LinkedList ll(0);
-	ll.print();
-	for (int i = 1; i < 20; ++i)
+	for (int i = 1; i < 10; ++i)
 	{
-		Node *newNode = new Node();
-		newNode->data = i;
-		ll.add(newNode);
+		Node *n = new Node();
+		n->data = i;
+		ll.push(n);
 	}
-	ll.print();
-	std::cout << "size: " << ll.getSize() << std::endl;
-	ll.pop();
-	ll.print();
-	std::cout << "size: " << ll.getSize() << std::endl;
-	for (int i = 0; i < 10; ++i) ll.pop();
-	ll.print();
 	
-	Node *t = new Node();
-	t->data = 9999;
-	ll.insert(t, ll.getSize() - 1);
-	ll.print();
-	std::cout << "size: " << ll.getSize() << std::endl;
-	ll.remove(5);
-	ll.print();
-	std::cout << "size: " << ll.getSize() << std::endl;
-	std::cout << "head data: " << ll.getHead()->data << std::endl;
+	LinkedList cc(0);
+	for (int i = 1; i < 11; ++i)
+	{
+		Node *n = new Node();
+		n->data = i;
+		cc.push(n);
+	}
 	
-	Node *reverse = ll.reverse();
 	ll.print();
-	std::cout << "tail data: " << ll.getTail()->data << std::endl;
+	cc.print();
 	
-	
+	int isEqual = LinkedList::compare(ll.getHead(), cc.getHead());
+	cout << "is equal: " << isEqual << endl;
 	return 0;
 }

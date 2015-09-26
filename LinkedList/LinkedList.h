@@ -15,12 +15,13 @@ private:
 	int size;
 public:
 	LinkedList(int headData);
-	void add(Node *node);
-	void pop();
+	void push(Node *node);
+	Node* pop();
 	void insert(Node *node, int index);
 	void remove(int index);
 	Node* reverse();
 	static int compare(Node *headA, Node *headB);
+	Node* mergeSorted(Node *headA, Node *headB);
 	Node* getHead();
 	Node* getTail();
 	int getSize();
