@@ -55,6 +55,7 @@ int main()
 	
 	Node *temp = LinkedList::removeDuplicates(mergedHead);
 	itr = temp;
+	cout << "duplicates removed" << endl;
 	while (itr != nullptr)
 	{
 		cout << itr->data << ", ";

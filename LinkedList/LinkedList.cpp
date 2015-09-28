@@ -171,17 +171,35 @@ Node* LinkedList::mergeSorted(Node *headA, Node *headB)
 
 Node* LinkedList::removeDuplicates(Node *head)
 {
+	Node *itr = head;
 	Node *temp = head;
-	Node *newHead = head;
-	while (temp != nullptr)
+	Node *newHead = temp;
+	
+	while (itr->next != nullptr)
 	{
-		if (temp->data != temp->next->data)
+		if (itr->data != itr->next->data)
 		{
-			
+			temp->next = itr->next;
+			temp = temp->next;
 		}
-		temp = temp->next;
+		itr = itr->next;
 	}
-	return head;
+	temp->next = nullptr;
+	
+	return newHead;
+}
+
+int LinkedList::hasCycle(Node* head)
+{
+	int hasCycle = 0;
+	Node *itrOne = head;
+	Node *itrTwo = head;
+	while (itr != nullptr)
+	{
+		
+	}
+	
+	return hasCycle;
 }
 
 Node* LinkedList::getHead()
