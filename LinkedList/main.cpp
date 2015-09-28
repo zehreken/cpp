@@ -34,7 +34,7 @@ int main()
 	}
 	
 	LinkedList cc(0);
-	for (int i = 1; i < 11; ++i)
+	for (int i = 2; i < 20; i += 2)
 	{
 		Node *n = new Node();
 		n->data = i;
@@ -44,7 +44,23 @@ int main()
 	ll.print();
 	cc.print();
 	
-	int isEqual = LinkedList::compare(ll.getHead(), cc.getHead());
-	cout << "is equal: " << isEqual << endl;
+	Node *mergedHead = LinkedList::mergeSorted(ll.getHead(), cc.getHead());
+	Node *itr = mergedHead;
+	while (itr != nullptr)
+	{
+		cout << itr->data << ", ";
+		itr = itr->next;
+	}
+	cout << endl;
+	
+	Node *temp = LinkedList::removeDuplicates(mergedHead);
+	itr = temp;
+	while (itr != nullptr)
+	{
+		cout << itr->data << ", ";
+		itr = itr->next;
+	}
+	cout << endl;
+	
 	return 0;
 }

@@ -131,9 +131,57 @@ int LinkedList::compare(Node *headA, Node *headB)
 
 Node* LinkedList::mergeSorted(Node *headA, Node *headB)
 {
-	Node *sortedHead = nullptr;
+	if (headA == nullptr) return headB;
+	else if (headB == nullptr) return headA;
 	
-	return sortedHead;
+	Node *temp = new Node();
+	Node *mergedHead = temp;
+	Node *itrA = headA;
+	Node *itrB = headB;
+	
+	bool iterate = true;
+	while (iterate)
+	{
+		if (itrA->data <= itrB->data)
+		{
+			temp->next = itrA;
+			temp = temp->next;
+			itrA = itrA->next;
+		}
+		else
+		{
+			temp->next = itrB;
+			temp = temp->next;
+			itrB = itrB->next;
+		}
+		if (itrA == nullptr)
+		{
+			temp->next = itrB;
+			iterate = false;
+		}
+		else if (itrB == nullptr)
+		{
+			temp->next = itrA;
+			iterate = false;
+		}
+	}
+	
+	return mergedHead->next;
+}
+
+Node* LinkedList::removeDuplicates(Node *head)
+{
+	Node *temp = head;
+	Node *newHead = head;
+	while (temp != nullptr)
+	{
+		if (temp->data != temp->next->data)
+		{
+			
+		}
+		temp = temp->next;
+	}
+	return head;
 }
 
 Node* LinkedList::getHead()
