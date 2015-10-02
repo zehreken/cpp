@@ -63,5 +63,14 @@ int main()
 	}
 	cout << endl;
 	
+	LinkedList dd(0);
+	for (int i = 1; i < 10000; ++i)
+	{
+		Node *n = new Node();
+		n->data = i;
+		dd.push(n);
+	}
+	cout << dd.hasCycle(dd.getHead()) << endl;
+	
 	return 0;
 }

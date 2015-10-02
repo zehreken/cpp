@@ -192,11 +192,25 @@ Node* LinkedList::removeDuplicates(Node *head)
 int LinkedList::hasCycle(Node* head)
 {
 	int hasCycle = 0;
-	Node *itrOne = head;
-	Node *itrTwo = head;
-	while (itr != nullptr)
+	
+	if (head != nullptr)
 	{
-		
+		Node *itrOne = head;
+		Node *itrTwo = itrOne->next;
+		while (itrTwo != nullptr)
+		{
+			while (itrTwo->next != nullptr)
+			{
+				if (itrTwo->next == itrOne)
+				{
+					hasCycle = 1;
+					return hasCycle;
+				}
+				itrTwo = itrTwo->next;
+			}
+			itrOne = itrOne->next;
+			itrTwo = itrOne->next;
+		}
 	}
 	
 	return hasCycle;
