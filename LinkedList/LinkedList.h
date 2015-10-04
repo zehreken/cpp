@@ -23,7 +23,8 @@ public:
 	static int compare(Node *headA, Node *headB);
 	static Node* mergeSorted(Node *headA, Node *headB);
 	static Node* removeDuplicates(Node *head);
-	int hasCycle(Node* head);
+	static int hasCycle(Node* head);
+	static Node* findMergeNode(Node *headA, Node *headB);
 	Node* getHead();
 	Node* getTail();
 	int getSize();

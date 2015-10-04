@@ -1,4 +1,5 @@
 #include <iostream>
+#include <set>
 #include "LinkedList.h"
 
 using namespace std;
@@ -191,29 +192,42 @@ Node* LinkedList::removeDuplicates(Node *head)
 
 int LinkedList::hasCycle(Node* head)
 {
-	int hasCycle = 0;
+    set<Node*> nRefs;
+    int size = nRefs.size();
+    Node *temp = head;
 	
-	if (head != nullptr)
-	{
-		Node *itrOne = head;
-		Node *itrTwo = itrOne->next;
-		while (itrTwo != nullptr)
-		{
-			while (itrTwo->next != nullptr)
-			{
-				if (itrTwo->next == itrOne)
-				{
-					hasCycle = 1;
-					return hasCycle;
-				}
-				itrTwo = itrTwo->next;
-			}
-			itrOne = itrOne->next;
-			itrTwo = itrOne->next;
-		}
-	}
+    while (temp != nullptr)
+    {
+        nRefs.insert(temp);
+        size++;
+        if (size > nRefs.size()) return 1;
+        temp = temp->next;
+    }
 	
-	return hasCycle;
+	return 0;
+}
+
+Node* LinkedList::findMergeNode(Node *headA, Node *headB)
+{
+	int mergeNodeIndex = 1;
+    Node *itrOne = headA;
+    Node *itrTwo = headB;
+    while (itrOne != nullptr)
+    {
+        while (itrTwo->next != nullptr)
+        {
+            if (itrTwo->next == itrOne)
+            {
+                return itrOne;
+            }
+            itrTwo = itrTwo->next;
+        }
+        itrOne = itrOne->next;
+        itrTwo = headB;
+        ++mergeNodeIndex;
+    }
+    
+    return nullptr;
 }
 
 Node* LinkedList::getHead()

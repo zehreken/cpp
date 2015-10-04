@@ -70,7 +70,7 @@ int main()
 		n->data = i;
 		dd.push(n);
 	}
-	cout << dd.hasCycle(dd.getHead()) << endl;
+	cout << LinkedList::hasCycle(dd.getHead()) << endl;
 	
 	return 0;
 }
