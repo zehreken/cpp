@@ -63,6 +63,15 @@ int main()
 	}
 	cout << endl;
 	
+	DNode *head = new DNode();
+	DNode *mid = new DNode();
+	DNode *tail = new DNode();
+	
+	head->next = mid;
+	mid->prev = head;
+	mid->next = tail;
+	tail->prev = mid;
+	
 	LinkedList dd(0);
 	for (int i = 1; i < 10000; ++i)
 	{

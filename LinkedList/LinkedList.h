@@ -3,8 +3,13 @@
 
 struct Node
 {
-	Node *next = 0;
+	Node *next = nullptr;
 	int data = 0;
+};
+
+struct DNode : Node
+{
+	Node *prev = nullptr;
 };
 
 class LinkedList
