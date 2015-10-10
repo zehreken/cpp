@@ -1,5 +1,6 @@
 #include <iostream>
 #include "LinkedList.h"
+#include "DLinkedList.h"
 
 /*
 Node *newHead = NULL;

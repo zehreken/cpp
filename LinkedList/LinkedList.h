@@ -7,11 +7,6 @@ struct Node
 	int data = 0;
 };
 
-struct DNode : Node
-{
-	Node *prev = nullptr;
-};
-
 class LinkedList
 {
 private:
