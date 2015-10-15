@@ -41,8 +41,7 @@ int main() {
     string input;
     cin >> firstTerm;
     cin >> secondTerm;
-    cin >> expTerm;
-    
+    cin >> expTerm;    
     cout << calcExpTerm(firstTerm, secondTerm, expTerm) << endl;
     
     return 0;
