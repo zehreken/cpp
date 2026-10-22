@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Graph.h"
+#include "graph.hpp"
 
 Graph::Graph(int _v)
 {
