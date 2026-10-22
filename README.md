@@ -8,5 +8,5 @@ build.cmd
 or a single program with
 build.cmd --target graph
 
-Executables land in build/: linked_list, graph, pe_<n> (Project Euler).
+Executables land in build/: linked_list, graph, memory_layout, pe_<n> (Project Euler).
 New files dropped into pe/ are picked up automatically.

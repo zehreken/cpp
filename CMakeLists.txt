@@ -21,7 +21,13 @@ add_executable(graph
 )
 target_include_directories(graph PRIVATE graph)
 
-# 2. Project Euler — one executable per problem, named pe_<n>.
+# 2. Studies
+add_executable(memory_layout
+    memory_layout/main.cpp
+)
+target_include_directories(memory_layout PRIVATE memory_layout)
+
+# 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
 file(GLOB PE_SOURCES CONFIGURE_DEPENDS pe/*.cpp)
 foreach(SRC ${PE_SOURCES})
