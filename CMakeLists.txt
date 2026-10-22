@@ -28,10 +28,3 @@ foreach(SRC ${PE_SOURCES})
     get_filename_component(NAME ${SRC} NAME_WE)
     add_executable(pe_${NAME} ${SRC})
 endforeach()
-
-# 3. HackerRank — same scheme, named hr_<file>.
-file(GLOB HR_SOURCES CONFIGURE_DEPENDS hackerrank/*.cpp)
-foreach(SRC ${HR_SOURCES})
-    get_filename_component(NAME ${SRC} NAME_WE)
-    add_executable(hr_${NAME} ${SRC})
-endforeach()

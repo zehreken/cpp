@@ -8,5 +8,5 @@ build.cmd
 or a single program with
 build.cmd --target graph
 
-Executables land in build/: linked_list, graph, pe_<n> (Project Euler), hr_<name> (HackerRank).
-New files dropped into pe/ or hackerrank/ are picked up automatically.
+Executables land in build/: linked_list, graph, pe_<n> (Project Euler).
+New files dropped into pe/ are picked up automatically.
