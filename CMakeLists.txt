@@ -27,6 +27,21 @@ add_executable(memory_layout
 )
 target_include_directories(memory_layout PRIVATE memory_layout)
 
+# Tracy — frame/zone profiler client. Exports Tracy::TracyClient, which carries
+# its include path and the TRACY_ENABLE define.
+#
+# The tag must match the viewer (tracy-profiler.exe) version exactly, or the
+# viewer refuses the connection. With TRACY_ENABLE OFF every Tracy macro
+# compiles to nothing, so instrumentation can stay in the code.
+include(cmake/CPM.cmake)
+CPMAddPackage(
+    NAME tracy
+    GITHUB_REPOSITORY wolfpld/tracy
+    GIT_TAG v0.14.1
+    OPTIONS "TRACY_ENABLE ON"
+)
+target_link_libraries(memory_layout PRIVATE Tracy::TracyClient)
+
 # 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
 file(GLOB PE_SOURCES CONFIGURE_DEPENDS pe/*.cpp)
