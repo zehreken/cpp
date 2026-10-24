@@ -2,6 +2,10 @@
 Checks: '-*,readability-identifier-naming,bugprone-reserved-identifier'
 
 CheckOptions:
+  # Tracy's zone macros declare __tracy_* / ___tracy_* locals in our code
+  - key: bugprone-reserved-identifier.AllowedIdentifiers
+    value: '^_+tracy_.*'
+
   # functions & methods: snake_case
   - key: readability-identifier-naming.FunctionCase
     value: lower_case
