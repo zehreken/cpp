@@ -3,6 +3,9 @@
 #include <tracy/Tracy.hpp>
 #include <vector>
 
+constexpr size_t PARTICLE_COUNT = 100'000;
+constexpr size_t LOOP_COUNT = 640;
+
 // 12 bytes
 struct Vec3 {
     float x_;
@@ -29,35 +32,44 @@ struct Particle {
 };
 
 void run(float delta_time) {
-    Particle p{
-        {
-            0.1f,
-            0.1f,
-            0.1f,
-        },
-        {1.0f, 1.0f, 1.0f},
-        {1.0f, 1.0f, 1.0f, 1.0f},
-        5.0f,
-        "particle",
-        true,
-    };
+    std::srand(31);
     std::vector<Particle> particles;
     {
-        ZoneScopedN("Initialize particles");
-        particles = std::vector<Particle>(100'000, p);
+        ZoneScopedN("Initialize bad particles");
+        particles.reserve(PARTICLE_COUNT);
+        for (size_t i = 0; i < PARTICLE_COUNT; ++i) {
+            float lifetime = 1.0f + static_cast<float>(std::rand() % 10);
+            particles.push_back(
+                Particle{
+                    {
+                        0.1f,
+                        0.1f,
+                        0.1f,
+                    },
+                    {1.0f, 1.0f, 1.0f},
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    lifetime,
+                    "particle",
+                    true,
+                }
+            );
+        }
     }
 
     {
         ZoneScopedN("Loop over bad particles");
-        for (int i = 0; i < 10'000; ++i) {
+        for (size_t i = 0; i < LOOP_COUNT; ++i) {
             {
-                ZoneScopedN("Loop");
+                ZoneScopedN("Bad/Loop");
                 for (auto& p : particles) {
                     if (!p.alive_)
                         continue;
 
                     p.pos_.x_ += p.vel_.x_ * delta_time;
                     p.lifetime_ -= delta_time;
+                    if (p.lifetime_ <= 0.0f) {
+                        p.alive_ = false;
+                    }
                 }
             }
         }
@@ -66,43 +78,52 @@ void run(float delta_time) {
 } // namespace bad
 
 namespace good {
-struct Particle {
-    Color color_;
-    Vec3 pos_;
-    Vec3 vel_;
-    float lifetime_;
-    bool alive_;
+struct Particle {    // 44 bytes
+    Color color_;    // 16 bytes
+    Vec3 pos_;       // 12 bytes
+    Vec3 vel_;       // 12 bytes
+    float lifetime_; // 4 bytes
 };
 
 void run(float delta_time) {
-    Particle p{
-        {1.0f, 1.0f, 1.0f, 1.0f},
-        {
-            0.1f,
-            0.1f,
-            0.1f,
-        },
-        {1.0f, 1.0f, 1.0f},
-        5.0f,
-        true,
-    };
+    std::srand(31);
     std::vector<Particle> particles;
     {
-        ZoneScopedN("Initialize particles");
-        particles = std::vector<Particle>(100'000, p);
+        ZoneScopedN("Initialize good particles");
+        particles.reserve(PARTICLE_COUNT);
+        for (size_t i = 0; i < PARTICLE_COUNT; ++i) {
+            float lifetime = 1.0f + static_cast<float>(std::rand() % 10);
+            particles.push_back(
+                Particle{
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    {
+                        0.1f,
+                        0.1f,
+                        0.1f,
+                    },
+                    {1.0f, 1.0f, 1.0f},
+                    lifetime,
+                }
+            );
+        }
     }
 
+    size_t alive_count = PARTICLE_COUNT;
     {
-        ZoneScopedN("Loop over bad particles");
-        for (int i = 0; i < 10'000; ++i) {
+        ZoneScopedN("Loop over good particles");
+        for (size_t i = 0; i < LOOP_COUNT; ++i) {
             {
-                ZoneScopedN("Loop");
-                for (auto& p : particles) {
-                    if (!p.alive_)
-                        continue;
-
+                ZoneScopedN("Good/Loop");
+                for (size_t j = 0; j < alive_count;) {
+                    Particle& p = particles[j];
                     p.pos_.x_ += p.vel_.x_ * delta_time;
                     p.lifetime_ -= delta_time;
+
+                    if (p.lifetime_ <= 0.0f) {
+                        std::swap(p, particles[--alive_count]);
+                    } else {
+                        ++j;
+                    }
                 }
             }
         }
@@ -111,7 +132,7 @@ void run(float delta_time) {
 } // namespace good
 
 int main() {
-    float delta_time = 0.016f;
+    float delta_time = 0.016f; // Simulates 60 fps
     bad::run(delta_time);
     good::run(delta_time);
 
