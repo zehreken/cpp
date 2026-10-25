@@ -42,6 +42,24 @@ CPMAddPackage(
 )
 target_link_libraries(memory_layout PRIVATE Tracy::TracyClient)
 
+add_executable(raii
+    raii/main.cpp
+)
+target_include_directories(raii PRIVATE raii)
+
+# doctest — single-header test framework. Only the header is used, so the
+# package is downloaded without running its own CMakeLists.
+CPMAddPackage(
+    NAME doctest
+    GITHUB_REPOSITORY doctest/doctest
+    GIT_TAG v2.4.11
+    DOWNLOAD_ONLY YES
+)
+add_executable(raii_test
+    raii/vector_test.cpp
+)
+target_include_directories(raii_test PRIVATE raii ${doctest_SOURCE_DIR})
+
 # 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
 file(GLOB PE_SOURCES CONFIGURE_DEPENDS pe/*.cpp)
