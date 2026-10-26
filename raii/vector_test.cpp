@@ -12,8 +12,14 @@ struct Tracker {
     int value;
 
     Tracker(int v = 0) : value(v) { ++alive; }
-    Tracker(const Tracker& o) : value(o.value) { ++alive; ++copies; }
-    Tracker(Tracker&& o) noexcept : value(o.value) { ++alive; ++moves; }
+    Tracker(const Tracker& o) : value(o.value) {
+        ++alive;
+        ++copies;
+    }
+    Tracker(Tracker&& o) noexcept : value(o.value) {
+        ++alive;
+        ++moves;
+    }
     Tracker& operator=(const Tracker& o) {
         value = o.value;
         ++copies;
@@ -75,12 +81,105 @@ TEST_CASE("growing moves elements instead of copying them") {
     CHECK(Tracker::alive == 0); // nothing leaked, nothing destroyed twice
 }
 
-// TODO: there is no operator[] yet, so no test can check that values survive
-// growth in the right order. Add one, then write that test.
+TEST_CASE("const vector can be read") {
+    Vector<int> v(4);
+    int x = 7;
+    v.push_back(x);
+    const Vector<int>& cv = v;
+    CHECK(cv.size() == 1);
+    CHECK(cv[0] == 7);
+}
 
-// TODO (Rule of 5): write these before implementing the members.
-//   - copy constructor: copy has equal contents, and changing one leaves the
-//     other alone
-//   - copy assignment: same, plus `v = v;` is safe
-//   - move constructor: source ends up empty, Tracker::copies stays 0
-//   - move assignment: same, and the old buffer of the target is freed
+TEST_CASE("values survive growth in order") {
+    Vector<int> v(2);
+    v.push_back(0);
+    v.push_back(1);
+    CHECK(v.size() == 2);
+    CHECK(v.capacity() == 2);
+
+    v.push_back(2);
+    CHECK(v[0] == 0);
+    CHECK(v[1] == 1);
+}
+
+TEST_CASE(
+    "copy construct: copy has equal contents, and changing one leave other "
+    "alone"
+) {
+    Vector<int> v(4);
+    for (size_t i = 0; i < 5; ++i) {
+        v.push_back(i);
+    }
+    CHECK(v.size() == 5);
+    CHECK(v.capacity() == 8);
+    CHECK(v[3] == 3);
+
+    // c for copy
+    Vector<int> c(v);
+    CHECK(c.size() == 5);
+    CHECK(c.capacity() == 8);
+    c[3] = 33;
+    CHECK(v[3] == 3);
+}
+
+TEST_CASE("copy assignment: same, plus 'v = v;' is safe") {
+    Vector<int> v(4);
+    for (size_t i = 0; i < 5; ++i) {
+        v.push_back(i);
+    }
+    CHECK(v.size() == 5);
+    CHECK(v.capacity() == 8);
+    CHECK(v[3] == 3);
+
+    // c for copy
+    Vector<int> c(1);
+    c = v;
+    CHECK(c.size() == 5);
+    CHECK(c.capacity() == 8);
+    c[3] = 33;
+    CHECK(v[3] == 3);
+
+    v = v;
+    for (size_t i = 0; i < v.size(); ++i) {
+        CHECK(v[i] == static_cast<int>(i));
+    }
+}
+
+TEST_CASE("move constructor: source ends up empty, Tracker::copies stays 0") {
+    Vector<int> v(4);
+    for (size_t i = 0; i < 5; ++i) {
+        v.push_back(i);
+    }
+
+    // m for move
+    Vector<int> m(std::move(v));
+
+    CHECK(m.size() == 5);
+    CHECK(m.capacity() == 8);
+    for (size_t i = 0; i < m.size(); ++i) {
+        CHECK(m[i] == static_cast<int>(i));
+    }
+
+    CHECK(v.size() == 0);
+    CHECK(v.capacity() == 0);
+
+    v.push_back(42);
+    CHECK(v.size() == 1);
+}
+
+TEST_CASE("move assignment: same, and the old buffer of the target is freed") {
+    Vector<int> v(4);
+    for (size_t i = 0; i < 5; ++i) {
+        v.push_back(i);
+    }
+
+    // m for move
+    Vector<int> m(1);
+    // move assignment
+    m = std::move(v);
+    CHECK(m.size() == 5);
+    CHECK(m.capacity() == 8);
+    for (size_t i = 0; i < m.size(); ++i) {
+        CHECK(m[i] == static_cast<int>(i));
+    }
+}
