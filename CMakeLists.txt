@@ -60,6 +60,12 @@ add_executable(raii_test
 )
 target_include_directories(raii_test PRIVATE raii ${doctest_SOURCE_DIR})
 
+# Rule of 0 version: separate target, so it can be red while raii_test stays green.
+add_executable(raii_imp_test
+    raii/imp_vector_test.cpp
+)
+target_include_directories(raii_imp_test PRIVATE raii ${doctest_SOURCE_DIR})
+
 # 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
 file(GLOB PE_SOURCES CONFIGURE_DEPENDS pe/*.cpp)

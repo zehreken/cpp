@@ -52,6 +52,8 @@ template <typename T> class Vector {
         size_ = other.size_;
         capacity_ = other.capacity_;
         other.data_ = nullptr;
+        other.size_ = 0;
+        other.capacity_ = 0;
 
         return *this;
     }
@@ -79,9 +81,7 @@ template <typename T> class Vector {
     }
     void push_back(const T& e) {
         if (size_ + 1 > capacity_) {
-            if (capacity_ == 0)
-                capacity_ = 1;
-            reserve(capacity_ * 2);
+            reserve(capacity_ ? capacity_ * 2 : 1);
         }
         data_[size_++] = e;
     }
