@@ -79,13 +79,16 @@ template <typename T> class Vector {
         delete[] data_;
         data_ = new_data;
     }
+
     void push_back(const T& e) {
         if (size_ + 1 > capacity_) {
             reserve(capacity_ ? capacity_ * 2 : 1);
         }
         data_[size_++] = e;
     }
+
     void emplace_back(const T& e) {}
+
     size_t size() const { return size_; }
     size_t capacity() const { return capacity_; }
 
