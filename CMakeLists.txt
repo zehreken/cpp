@@ -21,6 +21,11 @@ add_executable(graph
 )
 target_include_directories(graph PRIVATE graph)
 
+add_executable(ring_buffer
+    ring_buffer/main.cpp
+)
+target_include_directories(ring_buffer PRIVATE ring_buffer)
+
 # 2. Studies
 add_executable(memory_layout
     memory_layout/main.cpp
