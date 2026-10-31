@@ -26,6 +26,11 @@ add_executable(ring_buffer
 )
 target_include_directories(ring_buffer PRIVATE ring_buffer)
 
+add_executable(fixed_pool
+    fixed_pool/main.cpp
+)
+target_include_directories(fixed_pool PRIVATE fixed_pool)
+
 # 2. Studies
 add_executable(memory_layout
     memory_layout/main.cpp
@@ -70,6 +75,16 @@ add_executable(raii_imp_test
     raii/imp_vector_test.cpp
 )
 target_include_directories(raii_imp_test PRIVATE raii ${doctest_SOURCE_DIR})
+
+add_executable(ring_buffer_test
+    ring_buffer/ring_buffer_test.cpp
+)
+target_include_directories(ring_buffer_test PRIVATE ring_buffer ${doctest_SOURCE_DIR})
+
+add_executable(fixed_pool_test
+    fixed_pool/fixed_pool_test.cpp
+)
+target_include_directories(fixed_pool_test PRIVATE fixed_pool ${doctest_SOURCE_DIR})
 
 # 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
