@@ -97,8 +97,3 @@ template <typename T> class Vector {
     size_t size_;
     size_t capacity_;
 };
-
-template <typename T> class Vector0 {
-  public:
-  private:
-};
