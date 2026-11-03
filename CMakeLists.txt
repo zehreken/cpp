@@ -57,6 +57,11 @@ add_executable(raii
 )
 target_include_directories(raii PRIVATE raii)
 
+add_executable(coding_test
+    coding_test/main.cpp
+)
+target_include_directories(coding_test PRIVATE coding_test)
+
 # doctest — single-header test framework. Only the header is used, so the
 # package is downloaded without running its own CMakeLists.
 CPMAddPackage(
