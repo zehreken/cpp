@@ -1,23 +1,21 @@
+#include "d_linked_list.hpp"
 #include <iostream>
 #include <set>
-#include "d_linked_list.hpp"
 
 using namespace std;
 
-DLinkedList::DLinkedList(int headData)
-{
-	head = new DNode();
-	head->prev = nullptr;
-	head->next = nullptr;
-	head->data = headData;
-	tail = head;
-	size = 1;
+DLinkedList::DLinkedList(int head_data) {
+    head_ = new DNode();
+    head_->prev_ = nullptr;
+    head_->next_ = nullptr;
+    head_->data_ = head_data;
+    tail_ = head_;
+    size_ = 1;
 }
 
-void DLinkedList::push(DNode *node)
-{
-	node->prev = tail;
-	node->next = nullptr;
-	tail = node;
-	size += 1;
+void DLinkedList::push(DNode* node) {
+    node->prev_ = tail_;
+    node->next_ = nullptr;
+    tail_ = node;
+    size_ += 1;
 }

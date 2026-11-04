@@ -1,33 +1,32 @@
 #pragma once
 
-struct DNode
-{
-	DNode *prev = nullptr;
-	DNode *next = nullptr;
-	int data = 0;
+struct DNode {
+    DNode* prev_ = nullptr;
+    DNode* next_ = nullptr;
+    int data_ = 0;
 };
 
-class DLinkedList
-{
-private:
-	DNode *head;
-	DNode *tail;
-	int size;
-public:
-	DLinkedList(int headData);
-	void push(DNode *node);
-	DNode* pop();
-	void insert(DNode *node, int index);
-	void remove(int index);
-	DNode* reverse();
-	static int compare(DNode *headA, DNode *headB);
-	static DNode* mergeSorted(DNode* headA, DNode* headB);
-	static DNode* removeDuplicates(DNode* head);
-	static int hasCycle(DNode* head);
-	static DNode* findMergeNode(DNode *headA, DNode *headB);
-	DNode* getHead();
-	DNode* getTail();
-	int getSize();
-	void print();
-	void printReverse();
+class DLinkedList {
+  private:
+    DNode* head_;
+    DNode* tail_;
+    int size_;
+
+  public:
+    DLinkedList(int head_data);
+    void push(DNode* node);
+    DNode* pop();
+    void insert(DNode* node, int index);
+    void remove(int index);
+    DNode* reverse();
+    static int compare(DNode* head_a, DNode* head_b);
+    static DNode* merge_sorted(DNode* head_a, DNode* head_b);
+    static DNode* remove_duplicates(DNode* head);
+    static int has_cycle(DNode* head);
+    static DNode* find_merge_node(DNode* head_a, DNode* head_b);
+    DNode* get_head();
+    DNode* get_tail();
+    int get_size();
+    void print();
+    void print_reverse();
 };

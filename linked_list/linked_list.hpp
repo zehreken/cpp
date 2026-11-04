@@ -1,35 +1,34 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-struct Node
-{
-	Node *next = nullptr;
-	int data = 0;
+struct Node {
+    Node* next_ = nullptr;
+    int data_ = 0;
 };
 
-class LinkedList
-{
-private:
-	Node *head;
-	Node *tail;
-	int size;
-public:
-	LinkedList(int headData);
-	void push(Node *node);
-	Node* pop();
-	void insert(Node *node, int index);
-	void remove(int index);
-	Node* reverse();
-	static int compare(Node *headA, Node *headB);
-	static Node* mergeSorted(Node *headA, Node *headB);
-	static Node* removeDuplicates(Node *head);
-	static int hasCycle(Node* head);
-	static Node* findMergeNode(Node *headA, Node *headB);
-	Node* getHead();
-	Node* getTail();
-	int getSize();
-	void print();
-	void printReverse();
+class LinkedList {
+  private:
+    Node* head_;
+    Node* tail_;
+    int size_;
+
+  public:
+    LinkedList(int head_data);
+    void push(Node* node);
+    Node* pop();
+    void insert(Node* node, int index);
+    void remove(int index);
+    Node* reverse();
+    static int compare(Node* head_a, Node* head_b);
+    static Node* merge_sorted(Node* head_a, Node* head_b);
+    static Node* remove_duplicates(Node* head);
+    static int has_cycle(Node* head);
+    static Node* find_merge_node(Node* head_a, Node* head_b);
+    Node* get_head();
+    Node* get_tail();
+    int get_size();
+    void print();
+    void print_reverse();
 };
 
 #endif
