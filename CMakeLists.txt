@@ -91,6 +91,13 @@ add_executable(fixed_pool_test
 )
 target_include_directories(fixed_pool_test PRIVATE fixed_pool ${doctest_SOURCE_DIR})
 
+add_executable(linked_list_test
+    linked_list/linked_list_test.cpp
+    linked_list/linked_list.cpp
+    linked_list/d_linked_list.cpp
+)
+target_include_directories(linked_list_test PRIVATE linked_list ${doctest_SOURCE_DIR})
+
 # 3. Project Euler — one executable per problem, named pe_<n>.
 #    CONFIGURE_DEPENDS re-runs the glob when a new problem file is added.
 file(GLOB PE_SOURCES CONFIGURE_DEPENDS pe/*.cpp)
