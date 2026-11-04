@@ -27,38 +27,36 @@ int main() {
 
     LinkedList ll(0);
     for (int i = 1; i < 10; ++i) {
-        Node* n = new Node();
-        n->data_ = i;
-        ll.push(n);
+        ll.push(i);
     }
 
     LinkedList cc(0);
     for (int i = 2; i < 20; i += 2) {
-        Node* n = new Node();
-        n->data_ = i;
-        cc.push(n);
+        cc.push(i);
     }
 
     ll.print();
     cc.print();
 
-    Node* merged_head = LinkedList::merge_sorted(ll.get_head(), cc.get_head());
-    Node* itr = merged_head;
-    while (itr != nullptr) {
-        cout << itr->data_ << ", ";
-        itr = itr->next_;
-    }
-    cout << endl;
+    // Node* merged_head = LinkedList::merge_sorted(ll.get_head(),
+    // cc.get_head());
+    // Node* itr = merged_head;
+    // while (itr != nullptr) {
+    //     cout << itr->data_ << ", ";
+    //     itr = itr->next_;
+    // }
+    // cout << endl;
 
-    Node* temp = LinkedList::remove_duplicates(merged_head);
-    itr = temp;
-    cout << "duplicates removed" << endl;
-    while (itr != nullptr) {
-        cout << itr->data_ << ", ";
-        itr = itr->next_;
-    }
-    cout << endl;
+    // Node* temp = LinkedList::remove_duplicates(merged_head);
+    // itr = temp;
+    // cout << "duplicates removed" << endl;
+    // while (itr != nullptr) {
+    //     cout << itr->data_ << ", ";
+    //     itr = itr->next_;
+    // }
+    // cout << endl;
 
+    // ======= Doubly linked list
     DNode* head = new DNode();
     DNode* mid = new DNode();
     DNode* tail = new DNode();
@@ -70,11 +68,9 @@ int main() {
 
     LinkedList dd(0);
     for (int i = 1; i < 10000; ++i) {
-        Node* n = new Node();
-        n->data_ = i;
-        dd.push(n);
+        dd.push(i);
     }
-    cout << LinkedList::has_cycle(dd.get_head()) << endl;
+    // cout << LinkedList::has_cycle(dd.get_head()) << endl;
 
     return 0;
 }

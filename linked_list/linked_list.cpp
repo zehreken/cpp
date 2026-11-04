@@ -5,40 +5,52 @@
 using namespace std;
 
 LinkedList::LinkedList(int head_data) {
-    head_ = new Node();
+    head_ = new Node(head_data);
     head_->next_ = nullptr;
-    head_->data_ = head_data;
     tail_ = head_;
+    tail_->next_ = nullptr;
     size_ = 1;
 }
 
-void LinkedList::push(Node* node) {
+void LinkedList::push(int data) {
+    Node* node = new Node(data);
     tail_->next_ = node;
     tail_ = node;
     size_ += 1;
 }
 
-Node* LinkedList::pop() {
+bool LinkedList::pop(int& out) {
+    if (size_ == 0) {
+        out = -1;
+        return false;
+    }
     Node* itr = head_;
-    Node* temp = nullptr;
+    Node* new_tail = nullptr;
     while (itr->next_ != nullptr) {
-        temp = itr;
+        new_tail = itr;
         itr = itr->next_;
     }
-    tail_ = temp;
+    out = tail_->data_;
+    delete tail_;
+    if (new_tail != nullptr) { // this is when there is 1 node
+        tail_ = new_tail;
+        tail_->next_ = nullptr;
+    }
     size_ -= 1;
 
-    return temp->next_;
+    return true;
 }
 
-void LinkedList::insert(Node* node, int index) {
+void LinkedList::insert(int data, int index) {
     if (index < 0 || index >= size_) {
         cout << "EXCEPTION: illegal index value" << endl;
     } else if (index == 0) {
+        Node* node = new Node(data);
         node->next_ = head_;
         head_ = node;
         size_ += 1;
     } else {
+        Node* node = new Node(data);
         Node* itr = head_;
         Node* next = nullptr;
         int n = 0;
@@ -53,23 +65,35 @@ void LinkedList::insert(Node* node, int index) {
     }
 }
 
-void LinkedList::remove(int index) {
+bool LinkedList::remove(int index) {
     if (index < 0 || index >= size_) {
-        cout << "EXCEPTION: illegal index value" << endl;
-    } else if (index == 0) {
+        cout << "EXCEPTION: Bad index value" << endl;
+        return false;
+    }
+    if (size_ == 0) {
+        cout << "EXCEPTION: No elements to remove" << endl;
+        return false;
+    }
+    if (index == 0) {
+        Node* new_head = head_->next_;
         delete head_;
-        head_ = head_->next_;
+        head_ = new_head;
         size_ -= 1;
     } else {
+        Node* prev = nullptr;
         Node* itr = head_;
         int n = 0;
-        while (itr != nullptr && n < index - 1) {
+        while (itr != nullptr && n < index) {
+            prev = itr;
             itr = itr->next_;
             n += 1;
         }
-        itr->next_ = itr->next_->next_;
+        prev->next_ = itr->next_;
+        delete itr;
         size_ -= 1;
     }
+
+    return true;
 }
 
 Node* LinkedList::reverse() {
@@ -114,7 +138,7 @@ Node* LinkedList::merge_sorted(Node* head_a, Node* head_b) {
     else if (head_b == nullptr)
         return head_a;
 
-    Node* temp = new Node();
+    Node* temp = new Node(0);
     Node* merged_head = temp;
     Node* itr_a = head_a;
     Node* itr_b = head_b;
@@ -194,11 +218,7 @@ Node* LinkedList::find_merge_node(Node* head_a, Node* head_b) {
     return nullptr;
 }
 
-Node* LinkedList::get_head() { return head_; }
-
-Node* LinkedList::get_tail() { return tail_; }
-
-int LinkedList::get_size() { return size_; }
+size_t LinkedList::get_size() { return size_; }
 
 void LinkedList::print() {
     Node* itr = head_;
