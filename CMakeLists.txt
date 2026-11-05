@@ -4,6 +4,15 @@ project(Cpp LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Release keeps full optimization but also emits a PDB, so profilers
+# (Superluminal, Tracy callstacks) can resolve symbols. RelWithDebInfo isn't
+# used because MSVC gives it /Ob1, which inlines less than Release's /Ob2.
+# /DEBUG turns off /OPT:REF and /OPT:ICF by default, so they're restored here.
+if(MSVC)
+    string(APPEND CMAKE_CXX_FLAGS_RELEASE " /Zi")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /DEBUG /OPT:REF /OPT:ICF")
+endif()
+
 # Each folder is a standalone study program; headers sit next to their sources,
 # so the folder itself is the include root.
 
