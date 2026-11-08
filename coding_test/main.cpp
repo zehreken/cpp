@@ -1,192 +1,124 @@
 #include <cstdio>
-#include <string>
-#include <unordered_map>
+#include <functional>
 #include <vector>
 
+// A tiny timer system from a game engine. Game code schedules callbacks
+// to run after a delay; the engine calls Update(dt) once per frame.
 namespace original {
-struct Voice {
-    std::string sound_;
-    float volume_;
-    float time_left_;
-    bool active_;
-};
-
-class Mixer {
+class TimerManager {
   public:
-    explicit Mixer(int max_voices) : voices_(max_voices) {}
-
-    // Starts a sound. Returns a pointer so game code can adjust it later.
-    Voice* play(const std::string& sound, float volume, float duration) {
-        for (auto& v : voices_) {
-            if (!v.active_) {
-                v = {sound, volume, duration, true};
-                return &v;
-            }
-        }
-        // TODO: when all voices are busy, steal the quietest one instead.
-        return nullptr;
+    void schedule_after(float delay, std::function<void()> callback) {
+        timers_.push_back({delay, std::move(callback)});
     }
 
     void update(float dt) {
-        for (auto& v : voices_) {
-            if (v.active_) {
-                v.time_left_ -= dt;
-                if (v.time_left_ <= 0.f)
-                    v.active_ = false;
+        for (auto& t : timers_) {
+            t.remaining_ -= dt;
+            if (t.remaining_ <= 0.f) {
+                t.callback_();
             }
         }
+        // remove expired timers
+        std::vector<Timer> alive;
+        for (auto& t : timers_)
+            if (t.remaining_ > 0.f)
+                alive.push_back(t);
+        timers_ = alive;
     }
 
-    int active_count() const {
-        int n = 0;
-        for (auto v : voices_)
-            if (v.active_)
-                n++;
-        return n;
-    }
-
-    void print() const {
-        for (const auto& v : voices_)
-            if (v.active_)
-                printf(
-                    "  %s vol=%.2f left=%.2f\n",
-                    v.sound_.c_str(),
-                    v.volume_,
-                    v.time_left_
-                );
-    }
+    size_t count() const { return timers_.size(); }
 
   private:
-    std::vector<Voice> voices_;
+    struct Timer {
+        float remaining_;
+        std::function<void()> callback_;
+    };
+    std::vector<Timer> timers_;
 };
 
 void run() {
-    Mixer mixer(3);
+    TimerManager tm;
+    int frame = 0;
 
-    Voice* music = mixer.play("music", 0.5f, 100.f);
-    Voice* footstep = mixer.play("footstep", 0.2f, 0.3f);
-    Voice* gunshot = mixer.play("gunshot", 0.9f, 1.0f);
-    Voice* boom = mixer.play("explosion", 1.0f, 2.0f); // all voices busy
+    // A repeating "heartbeat" that reschedules itself from inside its callback.
+    std::function<void()> heartbeat = [&] {
+        std::printf("frame %d: heartbeat\n", frame);
+        tm.schedule_after(0.05f, heartbeat);
+    };
+    tm.schedule_after(0.05f, heartbeat);
+    tm.schedule_after(0.05f, [&] {
+        std::printf("frame %d: reload done\n", frame);
+    });
+    tm.schedule_after(0.10f, [&] {
+        std::printf("frame %d: grenade explodes\n", frame);
+    });
+    tm.schedule_after(1.00f, [&] {
+        std::printf("frame %d: respawn\n", frame);
+    });
 
-    // Later, game code adjusts the sounds it started.
-    footstep->volume_ = 0.05f;
-    if (boom)
-        boom->time_left_ += 0.5f;
+    for (frame = 1; frame <= 6; ++frame)
+        tm.update(1.f / 60.f);
 
-    mixer.update(0.5f);
-
-    printf("active: %d\n", mixer.active_count());
-    mixer.print();
-    (void)music;
-    (void)gunshot;
+    std::printf("timers left: %zu\n", tm.count());
 }
 } // namespace original
 
 namespace improved {
-struct Voice {
-    std::string sound_;
-    float volume_;
-    float time_left_;
-    bool active_;
-};
-
-class Mixer {
+class TimerManager {
   public:
-    explicit Mixer(int max_voices) : max_voices_(max_voices) {}
-
-    // Starts a sound. Returns a pointer so game code can adjust it later.
-    int play(const std::string& sound, float volume, float duration) {
-        if (id_to_voice_.size() < max_voices_) {
-            Voice v = {sound, volume, duration, true};
-            id_to_voice_[++playing_id_counter_] = v;
-        } else {
-            float min_volume = 1.0f;
-            int current_key = -1;
-            for (auto& [k, v] : id_to_voice_) {
-                if (v.volume_ <= min_volume) {
-                    min_volume = v.volume_;
-                    current_key = k;
-                }
-            }
-
-            id_to_voice_.erase(current_key);
-            Voice v = {sound, volume, duration, true};
-            id_to_voice_[++playing_id_counter_] = v;
-        }
-
-        return playing_id_counter_;
+    void schedule_after(float delay, std::function<void()> callback) {
+        timers_.push_back({delay, std::move(callback)});
     }
 
     void update(float dt) {
-        for (auto& [id, v] : id_to_voice_) {
-            if (v.active_) {
-                v.time_left_ -= dt;
-                if (v.time_left_ <= 0.f)
-                    v.active_ = false;
+        for (auto& t : timers_) {
+            t.remaining_ -= dt;
+            if (t.remaining_ <= 0.f) {
+                t.callback_();
             }
         }
+        // remove expired timers
+        std::vector<Timer> alive;
+        for (auto& t : timers_)
+            if (t.remaining_ > 0.f)
+                alive.push_back(t);
+        timers_ = alive;
     }
 
-    void set_volume(int playing_id, float volume) {
-        if (id_to_voice_.contains(playing_id)) {
-            id_to_voice_[playing_id].volume_ = volume;
-        }
-    }
-
-    void add_time_left(int playing_id, float time_left) {
-        if (id_to_voice_.contains(playing_id)) {
-            id_to_voice_[playing_id].time_left_ += time_left;
-        }
-    }
-
-    int active_count() const {
-        int n = 0;
-        // Added &, so the voices are not copied
-        for (const auto& [id, v] : id_to_voice_)
-            if (v.active_)
-                n++;
-        return n;
-    }
-
-    void print() const {
-        for (const auto& [id, v] : id_to_voice_)
-            if (v.active_)
-                printf(
-                    "  %s vol=%.2f left=%.2f\n",
-                    v.sound_.c_str(),
-                    v.volume_,
-                    v.time_left_
-                );
-    }
+    size_t count() const { return timers_.size(); }
 
   private:
-    std::unordered_map<int, Voice> id_to_voice_;
-    int max_voices_ = 0;
-    int playing_id_counter_ = 0;
+    struct Timer {
+        float remaining_;
+        std::function<void()> callback_;
+    };
+    std::vector<Timer> timers_;
 };
 
 void run() {
-    Mixer mixer(3);
+    TimerManager tm;
+    int frame = 0;
 
-    int music_id = mixer.play("music", 0.5f, 100.f);
-    int footstep_id = mixer.play("footstep", 0.2f, 0.3f);
-    int gunshot_id = mixer.play("gunshot", 0.9f, 1.0f);
-    // This one invalidates the footstep pointer, this one reminds our design
-    // We returned an id instead of a pointer to alter the voices after playing
-    int boom_id = mixer.play("explosion", 1.0f, 2.0f); // all voices busy
+    // A repeating "heartbeat" that reschedules itself from inside its callback.
+    std::function<void()> heartbeat = [&] {
+        std::printf("frame %d: heartbeat\n", frame);
+        tm.schedule_after(0.05f, heartbeat);
+    };
+    tm.schedule_after(0.05f, heartbeat);
+    tm.schedule_after(0.05f, [&] {
+        std::printf("frame %d: reload done\n", frame);
+    });
+    tm.schedule_after(0.10f, [&] {
+        std::printf("frame %d: grenade explodes\n", frame);
+    });
+    tm.schedule_after(1.00f, [&] {
+        std::printf("frame %d: respawn\n", frame);
+    });
 
-    // Later, game code adjusts the sounds it started.
-    mixer.set_volume(footstep_id, 0.05f);
-    if (boom_id != -1) {
-        mixer.add_time_left(boom_id, 0.5f);
-    }
+    for (frame = 1; frame <= 6; ++frame)
+        tm.update(1.f / 60.f);
 
-    mixer.update(0.5f);
-
-    printf("active: %d\n", mixer.active_count());
-    mixer.print();
-    // (void)music;
-    // (void)gunshot;
+    std::printf("timers left: %zu\n", tm.count());
 }
 } // namespace improved
 
@@ -194,8 +126,3 @@ int main() {
     original::run();
     improved::run();
 }
-
-/*
-Implements a audio mixer class to play sounds.
-Creates a mixer with max 3 sound and then plays 4 sounds.
-*/
