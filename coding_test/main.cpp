@@ -1,128 +1,74 @@
+#include <atomic>
 #include <cstdio>
-#include <functional>
-#include <vector>
+#include <thread>
 
-// A tiny timer system from a game engine. Game code schedules callbacks
-// to run after a delay; the engine calls Update(dt) once per frame.
+// Lock-free single-producer / single-consumer queue.
+// The game thread pushes audio commands; the audio thread pops them.
 namespace original {
-class TimerManager {
+struct AudioCommand {
+    int voice_id_;
+    float volume_;
+};
+
+template <typename T, size_t Capacity> class SpscQueue {
   public:
-    void schedule_after(float delay, std::function<void()> callback) {
-        timers_.push_back({delay, std::move(callback)});
+    bool push(const T& item) {
+        size_t h = head_.load(std::memory_order_relaxed);
+        size_t next = (h + 1) % Capacity;
+        if (next == tail_.load(std::memory_order_relaxed))
+            return false; // full
+        buffer_[h] = item;
+        head_.store(next, std::memory_order_relaxed);
+        return true;
     }
 
-    void update(float dt) {
-        for (auto& t : timers_) {
-            t.remaining_ -= dt;
-            if (t.remaining_ <= 0.f) {
-                t.callback_();
-            }
-        }
-        // remove expired timers
-        std::vector<Timer> alive;
-        for (auto& t : timers_)
-            if (t.remaining_ > 0.f)
-                alive.push_back(t);
-        timers_ = alive;
+    bool pop(T& out) {
+        size_t t = tail_.load(std::memory_order_relaxed);
+        if (t == head_.load(std::memory_order_relaxed))
+            return false; // empty
+        out = buffer_[t];
+        tail_.store((t + 1) % Capacity, std::memory_order_relaxed);
+        return true;
     }
-
-    size_t count() const { return timers_.size(); }
 
   private:
-    struct Timer {
-        float remaining_;
-        std::function<void()> callback_;
-    };
-    std::vector<Timer> timers_;
+    T buffer_[Capacity];
+    std::atomic<size_t> head_{0}; // written by producer
+    std::atomic<size_t> tail_{0}; // written by consumer
 };
 
 void run() {
-    TimerManager tm;
-    int frame = 0;
+    SpscQueue<AudioCommand, 1000> queue;
+    constexpr int n = 10'000'000;
 
-    // A repeating "heartbeat" that reschedules itself from inside its callback.
-    std::function<void()> heartbeat = [&] {
-        std::printf("frame %d: heartbeat\n", frame);
-        tm.schedule_after(0.05f, heartbeat);
-    };
-    tm.schedule_after(0.05f, heartbeat);
-    tm.schedule_after(0.05f, [&] {
-        std::printf("frame %d: reload done\n", frame);
-    });
-    tm.schedule_after(0.10f, [&] {
-        std::printf("frame %d: grenade explodes\n", frame);
-    });
-    tm.schedule_after(1.00f, [&] {
-        std::printf("frame %d: respawn\n", frame);
+    std::thread producer([&] {
+        for (int i = 0; i < n; ++i)
+            while (!queue.push({i, i * 0.5f})) {
+            }
     });
 
-    for (frame = 1; frame <= 6; ++frame)
-        tm.update(1.f / 60.f);
+    long long sum = 0;
+    int bad = 0;
+    std::thread consumer([&] {
+        AudioCommand cmd;
+        for (int i = 0; i < n; ++i) {
+            while (!queue.pop(cmd)) {
+            }
+            if (cmd.voice_id_ != i)
+                ++bad;
+            sum += cmd.voice_id_;
+        }
+    });
 
-    std::printf("timers left: %zu\n", tm.count());
+    producer.join();
+    consumer.join();
+    std::printf(
+        "sum %lld (expected %lld), out of order: %d\n",
+        sum,
+        (long long)n * (n - 1) / 2,
+        bad
+    );
 }
 } // namespace original
 
-namespace improved {
-class TimerManager {
-  public:
-    void schedule_after(float delay, std::function<void()> callback) {
-        timers_.push_back({delay, std::move(callback)});
-    }
-
-    void update(float dt) {
-        for (auto& t : timers_) {
-            t.remaining_ -= dt;
-            if (t.remaining_ <= 0.f) {
-                t.callback_();
-            }
-        }
-        // remove expired timers
-        std::vector<Timer> alive;
-        for (auto& t : timers_)
-            if (t.remaining_ > 0.f)
-                alive.push_back(t);
-        timers_ = alive;
-    }
-
-    size_t count() const { return timers_.size(); }
-
-  private:
-    struct Timer {
-        float remaining_;
-        std::function<void()> callback_;
-    };
-    std::vector<Timer> timers_;
-};
-
-void run() {
-    TimerManager tm;
-    int frame = 0;
-
-    // A repeating "heartbeat" that reschedules itself from inside its callback.
-    std::function<void()> heartbeat = [&] {
-        std::printf("frame %d: heartbeat\n", frame);
-        tm.schedule_after(0.05f, heartbeat);
-    };
-    tm.schedule_after(0.05f, heartbeat);
-    tm.schedule_after(0.05f, [&] {
-        std::printf("frame %d: reload done\n", frame);
-    });
-    tm.schedule_after(0.10f, [&] {
-        std::printf("frame %d: grenade explodes\n", frame);
-    });
-    tm.schedule_after(1.00f, [&] {
-        std::printf("frame %d: respawn\n", frame);
-    });
-
-    for (frame = 1; frame <= 6; ++frame)
-        tm.update(1.f / 60.f);
-
-    std::printf("timers left: %zu\n", tm.count());
-}
-} // namespace improved
-
-int main() {
-    original::run();
-    improved::run();
-}
+int main() { original::run(); }
